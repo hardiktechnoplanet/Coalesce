@@ -22,6 +22,38 @@
 
 using namespace std;
 
+/* doc2html supports the following command-line arguments:
+ * 
+ * -I - don't produce a keyword index
+ * -l lang - produce output in the specified language, lang
+ * -o outfile - write output to outfile instead of stdout
+ * -v - be verbose; more -v means more diagnostics
+ * additional file names are used as input files
+ * 
+ * The optString global tells getopt() which options we
+ * support, and which options have arguments.
+ */
+struct globalArgs_t {
+    int noIndex;                                /* -I option */
+    char *langCode;                             /* -l option */
+    const char *outFileName;    /* -o option */
+    FILE *outFile;
+    int verbosity;                              /* -v option */
+    char **inputFiles;                  /* input files */
+    int numInputFiles;                  /* # of input files */
+} globalArgs;
+
+static const char *optString = "Il:o:vh?";
+
+/* Display program usage, and exit.
+ */
+void display_usage( void )
+{
+    puts( "coa - a tool to manipulate and compare point cloud and STEP data" );
+    /* ... */
+    exit( EXIT_FAILURE );
+}
+
 int main( int argc, char *argv[] )
 {
     int opt = 0;
@@ -74,16 +106,13 @@ int main( int argc, char *argv[] )
         opt = getopt( argc, argv, optString );
     }
     
-    globalArgs.inputFiles = argv + optind;
-    globalArgs.numInputFiles = argc - optind;
 
-    convert_document();
     
 
     string data;
     int count = 0;
     //specify the path here
-    ifstream file("F:\Ekta Flow\SBD Nosecone.asc");
+    ifstream file("F:\\Ekta Flow\\SBD Nosecone.asc");
     if(!file.is_open()){
       cout<<"Error opening file"<<endl;
       return 0;
@@ -98,41 +127,5 @@ int main( int argc, char *argv[] )
 }
 
 
-/* doc2html supports the following command-line arguments:
- * 
- * -I - don't produce a keyword index
- * -l lang - produce output in the specified language, lang
- * -o outfile - write output to outfile instead of stdout
- * -v - be verbose; more -v means more diagnostics
- * additional file names are used as input files
- * 
- * The optString global tells getopt() which options we
- * support, and which options have arguments.
- */
-struct globalArgs_t {
-    int noIndex;                                /* -I option */
-    char *langCode;                             /* -l option */
-    const char *outFileName;    /* -o option */
-    FILE *outFile;
-    int verbosity;                              /* -v option */
-    char **inputFiles;                  /* input files */
-    int numInputFiles;                  /* # of input files */
-} globalArgs;
 
-static const char *optString = "Il:o:vh?";
 
-/* Display program usage, and exit.
- */
-void display_usage( void )
-{
-    puts( "doc2html - convert documents to HTML" );
-    /* ... */
-    exit( EXIT_FAILURE );
-}
-
-/* Convert the input files to HTML, governed by globalArgs.
- */
-void convert_document( void )
-{
-    /* ... */
-}

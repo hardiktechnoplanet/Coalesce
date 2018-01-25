@@ -41,6 +41,7 @@ struct globalArgs_t {
     int verbosity;                              /* -v option */
     char *inputFiles;                  /* input files */
     int numInputFiles;                  /* # of input files */
+    bool input_f;                   /* flag for input */
     bool summary_f;                 /* flag for summary */
     bool convert_f;                 /* flag for convert */
     bool analyze_f;                 /* flag for analyze */
@@ -76,6 +77,7 @@ int main( int argc, char *argv[] )
     globalArgs.verbosity = 0;
     globalArgs.inputFiles = NULL;
     globalArgs.numInputFiles = 0;
+    globalArgs.input_f = false;
     globalArgs.summary_f = false;
     globalArgs.convert_f = false;
     globalArgs.analyze_f = false;
@@ -88,6 +90,7 @@ int main( int argc, char *argv[] )
     while( opt != -1 ) {
       switch( opt ) {
             case 'i':
+                globalArgs.input_f = true;
                 globalArgs.inputFiles = optarg;
                 break;
 
@@ -135,11 +138,18 @@ int main( int argc, char *argv[] )
         opt = getopt( argc, argv, optString );
     }
 
+    /* Check for input file */
+    if(globalArgs.input_f == false){
+      cout << "No input file provided. The program will exit." << endl;
+      return 0;
+    }
 
+    /* Get summary */
     if(globalArgs.summary_f == true || (globalArgs.convert_f == false && globalArgs.analyze_f == false)){
       point_cloud_summary();
     }
 
+    /* Analysis */
     if(globalArgs.analyze_f == true){
       display_detailed_description();
     }

@@ -15,7 +15,6 @@
 #include <unistd.h>
 #include <getopt.h>
 
-
 #include<iostream>
 #include<fstream>
 #include<string>
@@ -53,6 +52,8 @@ static const char *optString = "o:i:savh?";
 int no_of_points();
 void point_cloud_summary();
 void display_detailed_description();
+bool isLoggingRequested(bool verbose_f);
+bool isFileOpened(char filename);
 
 /* Display program usage, and exit.
  */
@@ -134,13 +135,16 @@ int main( int argc, char *argv[] )
         opt = getopt( argc, argv, optString );
     }
 
-    if(globalArgs.summary_f == true || (globalArgs.convert_f == false && globalArgs.analyze_f == false && globalArgs.verbose_f == false)){
+
+    if(globalArgs.summary_f == true || (globalArgs.convert_f == false && globalArgs.analyze_f == false)){
       point_cloud_summary();
     }
 
     if(globalArgs.analyze_f == true){
       display_detailed_description();
     }
+
+
      return 0;
 }
 
@@ -148,25 +152,33 @@ int main( int argc, char *argv[] )
 int no_of_points(){
   string data;
   int count = 0;
+  isLoggingRequested(globalArgs.verbose_f)?(cout << "opening the input file: " << globalArgs.inputFiles << endl) : "";
   ifstream file(globalArgs.inputFiles);
   if(!file.is_open()){
     cout<<"Error opening file"<<endl;
     return 0;
   }
+
+  isLoggingRequested(globalArgs.verbose_f)?(cout << "Counting the number of points\n") : "";
   while(!file.eof()){
     getline(file,data);
     count++;
   }
+
+  isLoggingRequested(globalArgs.verbose_f)?(cout << "Closing the input file: " << globalArgs.inputFiles << endl) : "";
   file.close();
   return count;
 }
 
 /* Create the summary of the point cloud */
 void point_cloud_summary(){
+  isLoggingRequested(globalArgs.verbose_f)?(cout << "opening the output file: " << globalArgs.outFileName << endl) : "";
   ofstream outfile (globalArgs.outFileName);
   if(outfile.is_open()){
-    outfile <<"=========================SUMMARY=========================" << endl << endl;
+    isLoggingRequested(globalArgs.verbose_f)?(cout << "Writing summary to: " << globalArgs.outFileName << endl) : "";
+    outfile <<"================================== SUMMARY ===================================" << endl << endl;
     outfile << "Total number of points in the point cloud: "<<no_of_points() << endl;
+    isLoggingRequested(globalArgs.verbose_f)?(cout << "Closing: " << globalArgs.outFileName << endl) : "";
     outfile.close();
   }
   else{
@@ -182,6 +194,9 @@ void display_detailed_description(){
   if(!file.is_open()){
     cout<<"Error opening file"<<endl;
   }
+  else{
+    cout << "-------------------------------Analysis-------------------------------" << endl;
+  }
   while(!file.eof()){
     getline(file,data);
     cout << data <<endl;
@@ -189,4 +204,22 @@ void display_detailed_description(){
   }
   file.close();
   cout << endl << "Total number of points: "<< count << endl;
+}
+
+/* Check if file is opened */
+/*
+bool isFileOpened(char filename){
+  ifstream file(filename);
+  if(file.is_open()){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+*/
+
+/* Check if verbosity is required */
+bool isLoggingRequested(bool verbose_f){
+  return verbose_f;
 }

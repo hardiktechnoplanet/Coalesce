@@ -1,72 +1,74 @@
-/* coalesce - this command line utility manipulates
+/**********************************************************
+
+  file       : coalesce.cpp
+
+  last update: January 2017
+
+  authors    : Jim Barkley (james@ekta.co), Hardik Garg (hardik@ekta.co), Vishesh Chanang (vishesh@ekta.co)
+
+  description:  
+    coalesce - this command line utility manipulates
     and compares point cloud data with CAD data
- *
- * This application ...
- */
+
+  license    : TBD
+
+***********************************************************/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <iostream>
+#include <fstream>
+#include <string>
 
-
-#include<iostream>
-#include<fstream>
-#include<string>
+#include "coalesce.h"
 
 
 using namespace std;
 
-struct globalArgs_t {
-    int noIndex;                                /* -I option */
-    char *langCode;                             /* -l option */
-    const char *outFileName;                    /* -o option */
-    FILE *outFile;
-    int verbosity;                              /* -v option */
-    char **inputFiles;                          /* input files */
-    int numInputFiles;                          /* # of input files */
-} globalArgs;
-
-static const char *optString = "Il:o:vh?";
-
-/* Display program usage, and exit.
+/* coa supports the following command-line arguments:
+ *
+ * -i - input file 
+ * -o outfile - write output to outfile instead of stdout
+ * -s summary - print out summary 
+ * -a analysis - print out analysis 
+ * -v - be verbose; more -v means more diagnostics
+ *
  */
-void display_usage( void )
-{
-    puts( "coa - a tool to manipulate and compare point cloud and STEP data" );
-    /* ... */
-    exit( EXIT_FAILURE );
-}
 
-
+/* main function to parse args and provide
+   execution control structure depending on arguments
+   provided */
 int main( int argc, char *argv[] )
 {
     int opt = 0;
-    int arg_count = 1;
     /* Initialize globalArgs before we get to work. */
-    globalArgs.noIndex = 0;             /* false */
-    globalArgs.langCode = NULL;
-    globalArgs.outFileName = NULL;
-    globalArgs.outFile = NULL;
-    globalArgs.verbosity = 0;
-    globalArgs.inputFiles = NULL;
-    globalArgs.numInputFiles = 0;
+    globalArgs.input_f = false;
+    globalArgs.summary_f = false;
+    globalArgs.convert_f = false;
+    globalArgs.analyze_f = false;
+    globalArgs.verbose_f = false;
 
-    /* Process the arguments with getopt(), then
-     * populate globalArgs.
-     */
-
-     /* Vishesh comment */
+    /* Process the arguments with getopt(), then * populate globalArgs. */
     opt = getopt( argc, argv, optString );
     while( opt != -1 ) {
-        switch( opt ) {
-            case 'a':
-                globalArgs.noIndex = 1; /* true */
+      switch( opt ) {
+            case 'i':
+                globalArgs.input_f = true;
+                globalArgs.inputFiles = optarg;
                 break;
-                
+
+            case 'a':
+                globalArgs.analyze_f = true;
+                break;
+/*
             case 'l':
                 globalArgs.langCode = optarg;
                 break;
-                
+*/
+
             case 'o':
                 /* This generates an "assignment from
                  * incompatible pointer type" warning that
@@ -74,42 +76,51 @@ int main( int argc, char *argv[] )
                  */
                 globalArgs.outFileName = optarg;
                 break;
-                
-            case 'v':
-                globalArgs.verbosity++;
+            case 's':
+                if(globalArgs.outFileName == NULL)
+                      globalArgs.outFileName = "summary.txt";
+                globalArgs.summary_f = true;
                 break;
-                
+            case 'v':
+                //globalArgs.verbosity++;
+                globalArgs.verbose_f = true;
+                break;
+
+            case 'c':
+                globalArgs.convert_f = true;
+                break;
+
+
             case 'h':   /* fall-through is intentional */
             case '?':
-                display_usage();
+                display_usage(NULL);
                 break;
-                
+
             default:
+
                 /* You won't actually get here. */
                 break;
         }
-        
+
         opt = getopt( argc, argv, optString );
     }
-    
 
-    
+    /* Check for input file */
+    if(globalArgs.input_f == false) {
+      display_usage("No input file provided. The program will exit.");
+    }
 
-    string data;
-    int count = 0;
-    //specify the path here
-    //ifstream file("F:\\Ekta Flow\\SBD Nosecone.asc");
-    void convert_document();
-    cout << argv[2] << endl;
-    ifstream file(argv[2]);
-    if(!file.is_open()){
-      cout<<"Error opening file"<<endl;
-      return 0;
+    /* Get summary */
+    if(globalArgs.summary_f == true || (globalArgs.convert_f == false && globalArgs.analyze_f == false)){
+      point_cloud_summary();
     }
-    while(!file.eof()){
-      getline(file,data);
-      count++;
+
+    /* Analysis */
+    if(globalArgs.analyze_f == true){
+      display_detailed_description();
     }
-     cout<<count<<endl;
+
+
      return 0;
 }
+

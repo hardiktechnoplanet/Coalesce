@@ -1,11 +1,4 @@
-
-
-
-
-
-
-
-/* coalesce - this command line utility manipulates 
+/* coalesce - this command line utility manipulates
     and compares point cloud data with CAD data
  *
  * This application ...
@@ -13,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <getopt.h>
 
 
 #include<iostream>
@@ -22,25 +16,14 @@
 
 using namespace std;
 
-/* doc2html supports the following command-line arguments:
- * 
- * -I - don't produce a keyword index
- * -l lang - produce output in the specified language, lang
- * -o outfile - write output to outfile instead of stdout
- * -v - be verbose; more -v means more diagnostics
- * additional file names are used as input files
- * 
- * The optString global tells getopt() which options we
- * support, and which options have arguments.
- */
 struct globalArgs_t {
     int noIndex;                                /* -I option */
     char *langCode;                             /* -l option */
-    const char *outFileName;    /* -o option */
+    const char *outFileName;                    /* -o option */
     FILE *outFile;
     int verbosity;                              /* -v option */
-    char **inputFiles;                  /* input files */
-    int numInputFiles;                  /* # of input files */
+    char **inputFiles;                          /* input files */
+    int numInputFiles;                          /* # of input files */
 } globalArgs;
 
 static const char *optString = "Il:o:vh?";
@@ -54,10 +37,11 @@ void display_usage( void )
     exit( EXIT_FAILURE );
 }
 
+
 int main( int argc, char *argv[] )
 {
     int opt = 0;
-    
+    int arg_count = 1;
     /* Initialize globalArgs before we get to work. */
     globalArgs.noIndex = 0;             /* false */
     globalArgs.langCode = NULL;
@@ -66,10 +50,12 @@ int main( int argc, char *argv[] )
     globalArgs.verbosity = 0;
     globalArgs.inputFiles = NULL;
     globalArgs.numInputFiles = 0;
-    
-    /* Process the arguments with getopt(), then 
-     * populate globalArgs. 
+
+    /* Process the arguments with getopt(), then
+     * populate globalArgs.
      */
+
+     /* Vishesh comment */
     opt = getopt( argc, argv, optString );
     while( opt != -1 ) {
         switch( opt ) {
@@ -112,7 +98,10 @@ int main( int argc, char *argv[] )
     string data;
     int count = 0;
     //specify the path here
-    ifstream file("F:\\Ekta Flow\\SBD Nosecone.asc");
+    //ifstream file("F:\\Ekta Flow\\SBD Nosecone.asc");
+    void convert_document();
+    cout << argv[2] << endl;
+    ifstream file(argv[2]);
     if(!file.is_open()){
       cout<<"Error opening file"<<endl;
       return 0;
@@ -120,12 +109,7 @@ int main( int argc, char *argv[] )
     while(!file.eof()){
       getline(file,data);
       count++;
-      cout<<data<<endl;
     }
      cout<<count<<endl;
      return 0;
 }
-
-
-
-

@@ -53,12 +53,13 @@ test:
 	nothing 
 
 clean:
-	rm -rf bin/*; rm -Rf build/*
+	rm -rf bin/*; rm -Rf build/*; rm -f *.o coalesce.exe
 
 win: coalesce.exe 
 
 coalesce.exe: coalesce.cpp
-		g++ -mwindows coalesce.cpp -o coalesce.exe
+		g++ coalesce.cpp -o coalesce.exe
+		#g++ -mwindows coalesce.cpp -o coalesce.exe
 
 # Listing of phony targets.
 .PHONY : all begin finish end sizebefore sizeafter gccversion \

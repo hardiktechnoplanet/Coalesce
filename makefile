@@ -55,6 +55,11 @@ test:
 clean:
 	rm -rf bin/*; rm -Rf build/*
 
+win: coalesce.exe 
+
+coalesce.exe: coalesce.cpp
+		g++ -mwindows coalesce.cpp -o coalesce.exe
+
 # Listing of phony targets.
 .PHONY : all begin finish end sizebefore sizeafter gccversion \
 build elf hex eep lss sym coff extcoff doxygen clean          \
